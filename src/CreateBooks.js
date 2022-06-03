@@ -140,7 +140,7 @@ export const CreateBooks = () => {
     const [author, setAuthor]=useState('');
     const [bookId, setBookId]=useState('');
     const [cover, setCover]=useState('');
-    useEffect(async ()=>{
+    useEffect( ()=>{
         let input = document.querySelector('input[type=file]');
 
             function readFile(event) {
@@ -173,7 +173,7 @@ export const CreateBooks = () => {
         setBookId('');
     }
 
-    // delete book from LS
+
     const handleDeleteBook=(event,bookId)=>{
         const filteredBooks=books.filter((element)=>{
             return element.bookId !== bookId
