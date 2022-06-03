@@ -1,8 +1,39 @@
 import React,{useState, useEffect} from 'react'
-import styled from "styled-components";
+import styled, { createGlobalStyle, css } from "styled-components";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faTrashCan} from "@fortawesome/free-regular-svg-icons";
-import { useForm } from 'react-hook-form';
+
+const GlobalStyle = createGlobalStyle`
+  html {
+    height: 100%
+  }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: bisque;
+    height: 100%;
+    margin: 0;
+    color: #555;
+  }
+  label {
+    cursor: pointer;
+   color: #f7797d;
+  }
+
+  #upload-photo {
+    padding: 5px;
+    opacity: 25;
+    z-index: 1;
+  }
+`;
+const sharedStyles = css`
+  background-color: #eee;
+  height: 40px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  margin: 10px 0 20px 0;
+  padding: 20px;
+  box-sizing: border-box;
+`;
 const Container = styled.div`
   border-color: #222222;
   border-radius: 10px;
@@ -16,16 +47,56 @@ const Info = styled.div`
   flex-direction: column;
   padding: 10px;
 `;
-const Order = styled.div`
+const SingleBook = styled.div`
   display: flex;
-  justify-content: space-between;
-  background-color: lavender;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: #f3eeec;
   margin: 1em;
   border-radius: 10px;
 `;
-const OrderDetail = styled.div`
-  flex: 2;
+const BookDetail = styled.div`
   display: flex;
+`;
+const StyledFormWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+  padding: 0 20px;
+`;
+
+const StyledForm = styled.form`
+  width: 100%;
+  max-width: 700px;
+  padding: 40px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
+`;
+
+const StyledInput = styled.input`
+  display: flex;
+  width: 100%;
+  ${sharedStyles}
+`;
+const StyledFileInput = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  width: 100%;
+`;
+const StyledButton = styled.button`
+  display: block;
+  background-color: #f7797d;
+  font-size: 0.9rem;
+  border: 0;
+  border-radius: 5px;
+  height: 40px;
+  padding: 0 20px;
+  cursor: pointer;
+  box-sizing: border-box;
 `;
 
 const Details = styled.div`
@@ -35,20 +106,25 @@ const Details = styled.div`
   justify-content: space-around;
 `;
 const Image = styled.img`
-  width: 200px;
+  max-width: 200px;
 `;
-const ProductName = styled.span``;
+const BookTitle = styled.span``;
 
-const ProductId = styled.span``;
+const BookId = styled.span``;
 
-const ProductSize = styled.span``;
+const BookAuthor = styled.span``;
 
 const ProductPrice = styled.div`
   font-size: 30px;
   font-weight: 200;
 `;
-// getting the values of local storage
-const getDatafromLS=()=>{
+const Footer = styled.div`
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const getBooks=()=>{
     const data = localStorage.getItem('books');
     if(data){
         return JSON.parse(data);
@@ -59,18 +135,17 @@ const getDatafromLS=()=>{
 }
 
 export const CreateBooks = () => {
-    const [books, setbooks]=useState(getDatafromLS());
+    const [books, setbooks]=useState(getBooks());
     const [title, setTitle]=useState('');
     const [author, setAuthor]=useState('');
-    const [isbn, setIsbn]=useState('');
+    const [bookId, setBookId]=useState('');
     const [cover, setCover]=useState('');
-    useEffect(()=>{
+    useEffect(async ()=>{
         let input = document.querySelector('input[type=file]');
-            let textarea = document.querySelector('textarea');
 
             function readFile(event) {
-                textarea.textContent = event.target.result;
                 console.log(event.target.result);
+                setCover(event.target.result);
             }
 
             let reader = new FileReader();
@@ -89,90 +164,90 @@ export const CreateBooks = () => {
         let book={
             title,
             author,
-            isbn,
+            bookId,
             cover
         }
         setbooks([...books,book]);
         setTitle('');
         setAuthor('');
-        setIsbn('');
+        setBookId('');
     }
 
     // delete book from LS
-    const handleDeleteProduct=(event,isbn)=>{
-        const filteredBooks=books.filter((element,index)=>{
-            return element.isbn !== isbn
+    const handleDeleteBook=(event,bookId)=>{
+        const filteredBooks=books.filter((element)=>{
+            return element.bookId !== bookId
         })
         setbooks(filteredBooks);
     }
-
-    // saving data to local storage
     useEffect(()=>{
         localStorage.setItem('books',JSON.stringify(books));
     },[books])
     return (
         <Container>
-            <Title>BookList App</Title>
-            <p>Add and view your books using local storage</p>
-            <div className='main'>
-
-                <div className='form-container'>
-                    <form autoComplete="off" className='form-group'
+        <>
+            <GlobalStyle/>
+            <Title>Список Книг</Title>
+            <StyledFormWrapper>
+                    <StyledForm autoComplete="off" className='form-group'
                           onSubmit={handleAddBookSubmit}>
-                        <label>Title</label>
-                        <input type="text" className='form-control' required
-                               onChange={(event)=>setTitle(event.target.value)} value={title}></input>
-                        <br></br>
-                        <label>Author</label>
-                        <input type="text" className='form-control' required
-                               onChange={(event)=>setAuthor(event.target.value)} value={author}></input>
-                        <br></br>
-                        <label>ISBN#</label>
-                        <input type="text" className='form-control' required
-                               onChange={(event)=>setIsbn(event.target.value)} value={isbn}></input>
-                        <br></br>
-                        <input type="file" onChange={(event)=>setCover(event.target.value)} value={cover}/>
-                            <textarea rows="10" cols="50"></textarea>
-                        <button type="submit" className='btn btn-success btn-md'>
-                            ADD
-                        </button>
-                    </form>
-                </div>
-
-                <div className='view-container'>
+                        <StyledInput type="text" required
+                               onChange={(event)=>setTitle(event.target.value)}
+                                     value={title}
+                                     placeholder='Название книги '>
+                        </StyledInput>
+                        <StyledInput type="text" required
+                               onChange={(event)=>setAuthor(event.target.value)}
+                                     value={author}
+                                     placeholder='Имя автора'>
+                        </StyledInput>
+                        <StyledInput type="text" required
+                               onChange={(event)=>setBookId(event.target.value)}
+                                     value={bookId}
+                                     placeholder='ID книги'>
+                        </StyledInput>
+                        <StyledFileInput>
+                            <label htmlFor="upload-photo">Загрузить обложку</label>
+                        <input type="file" id='upload-photo' accept=".jpg,.jpeg,.png"/>
+                        </StyledFileInput>
+                        <StyledButton type="submit">
+                            Добавить
+                        </StyledButton>
+                    </StyledForm>
+                </StyledFormWrapper>
+            </>
                     {books.length>0&&<>
-                        <Container className='table-responsive'>
+                        <Container>
                                 <Info>
                                     {books.map((book) => (
-                                    <Order key={book.isbn}>
-                                        <OrderDetail>
+                                    <SingleBook key={book.bookId}>
+                                        <BookDetail>
                                             <Image src={book.cover} />
                                             <Details>
-                                                <ProductName>
-                                                    <b>Title:</b> {book.title}
-                                                </ProductName>
-                                                <ProductId>
-                                                    <b>ID:</b> {book.isbn}
-                                                </ProductId>
-                                                <ProductSize>
-                                                    <b>Author:</b> {book.author}
-                                                </ProductSize>
+                                                <BookTitle>
+                                                    <b>Название:</b> {book.title}
+                                                </BookTitle>
+                                                <BookAuthor>
+                                                    <b>Автор:</b> {book.author}
+                                                </BookAuthor>
+                                                <BookId>
+                                                    <b>ID:</b> {book.bookId}
+                                                </BookId>
                                                 <ProductPrice>
-                                                    <FontAwesomeIcon onClick={(event)=>handleDeleteProduct(event,book.isbn)} icon={faTrashCan}/>
+                                                    <FontAwesomeIcon onClick={(event)=>handleDeleteBook(event,book.bookId)} icon={faTrashCan}/>
                                                 </ProductPrice>
                                             </Details>
-                                        </OrderDetail>
-                                    </Order>
+                                        </BookDetail>
+                                    </SingleBook>
                                     ))}
                                 </Info>
                         </Container>
-                        <button className='btn btn-danger btn-md'
-                                onClick={()=>setbooks([])}>Remove All</button>
+                    <Footer>
+                        <StyledButton className='btn btn-danger btn-md'
+                                onClick={()=>setbooks([])}>Очистить всё</StyledButton>
+                    </Footer>
                     </>}
-                    {books.length < 1 && <div>No books are added yet</div>}
-                </div>
-
-            </div>
+                    {books.length < 1 && <Footer>Книги не добавлены</Footer>}
         </Container>
     )
 }
