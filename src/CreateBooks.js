@@ -2,7 +2,6 @@ import React,{useState, useEffect} from 'react'
 import styled, { createGlobalStyle, css } from "styled-components";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faTrashCan} from "@fortawesome/free-regular-svg-icons";
-import {faPenAlt} from "@fortawesome/free-solid-svg-icons";
 
 const GlobalStyle = createGlobalStyle`
   html {
@@ -188,9 +187,10 @@ export const CreateBooks = () => {
         const filteredBooks=books.filter((element)=>{
             let editBtn = document.getElementById('editBtn');
             let editables = [];
-           editables[0] = document.getElementById('title');
-            editables[1] = document.getElementById('author');
-            editables[2] = document.getElementById('bookId');
+           editables[0] = document.getElementById(element.title);
+            editables[1] = document.getElementById(element.author);
+            editables[2] = document.getElementById(element.bookId);
+            console.log(editables);
                 if (!editables[0].isContentEditable) {
                     editables[0].contentEditable = 'true';
                     editables[1].contentEditable = 'true';
@@ -209,11 +209,11 @@ export const CreateBooks = () => {
                     for (let i = 0; i < editables.length; i++) {
                         localStorage.setItem(editables[i].getAttribute('id'), editables[i].innerHTML);
                     }
-                    const newBookId = JSON.stringify(localStorage.getItem('bookId'))
+                    const newBookId = JSON.stringify(localStorage.getItem(element.bookId))
                     element.bookId = newBookId.replace(/['"]+/g, '');
-                    const newBookTitle = JSON.stringify(localStorage.getItem('title'))
+                    const newBookTitle = JSON.stringify(localStorage.getItem(element.title))
                     element.title = newBookTitle.replace(/['"]+/g, '');
-                    const newBookAuthor = JSON.stringify(localStorage.getItem('author'))
+                    const newBookAuthor = JSON.stringify(localStorage.getItem(element.author))
                     element.author = newBookAuthor.replace(/['"]+/g, '');
                     for (let i = 0; i < editables.length; i++) {
                         localStorage.removeItem(editables[i].getAttribute('id'));
@@ -268,13 +268,13 @@ export const CreateBooks = () => {
                                             <Details>
                                                 <BookTitle>
                                                     <b>Название:</b>
-                                                    <span id='title'>{book.title}</span>
+                                                    <span id={book.title}>{book.title}</span>
                                                 </BookTitle>
                                                 <BookAuthor>
-                                                    <b>Автор:</b><span id='author'>{book.author}</span>
+                                                    <b>Автор:</b><span id={book.author}>{book.author}</span>
                                                 </BookAuthor>
                                                 <BookId>
-                                                    <b>ID:</b> <span id='bookId'>{book.bookId}</span>
+                                                    <b>ID:</b> <span id={book.bookId}>{book.bookId}</span>
                                                 </BookId>
                                                 <ProductPrice>
                                                     <FontAwesomeIcon onClick={(event)=>handleDeleteBook(event,book.bookId)} icon={faTrashCan}/>
