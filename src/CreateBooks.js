@@ -198,19 +198,17 @@ export const CreateBooks = () => {
                     editBtn.innerHTML = 'Сохранить Изменения';
                     editBtn.style.backgroundColor = '#6F9';
                 } else {
-                    // выключаем режим редактирования
                     editables[0].contentEditable = 'false';
                     editables[1].contentEditable = 'false';
                     editables[2].contentEditable = 'false';
-                    // изменяем текст и цвет кнопки
                     editBtn.innerHTML = 'Enable Editing';
                     editBtn.style.backgroundColor = '#ffcc00';
-                    // сохраняем данные в localStorage
                     for (let i = 0; i < editables.length; i++) {
                         localStorage.setItem(editables[i].getAttribute('id'), editables[i].innerHTML);
                     }
                     const newBookId = JSON.stringify(localStorage.getItem(element.bookId))
                     element.bookId = newBookId.replace(/['"]+/g, '');
+
                     const newBookTitle = JSON.stringify(localStorage.getItem(element.title))
                     element.title = newBookTitle.replace(/['"]+/g, '');
                     const newBookAuthor = JSON.stringify(localStorage.getItem(element.author))
@@ -268,13 +266,13 @@ export const CreateBooks = () => {
                                             <Details>
                                                 <BookTitle>
                                                     <b>Название:</b>
-                                                    <span id={book.title}>{book.title}</span>
+                                                    <div id={book.title}>{book.title}</div>
                                                 </BookTitle>
                                                 <BookAuthor>
-                                                    <b>Автор:</b><span id={book.author}>{book.author}</span>
+                                                    <b>Автор:</b><div id={book.author}>{book.author}</div>
                                                 </BookAuthor>
                                                 <BookId>
-                                                    <b>ID:</b> <span id={book.bookId}>{book.bookId}</span>
+                                                    <b>ID:</b> <div id={book.bookId}>{book.bookId}</div>
                                                 </BookId>
                                                 <ProductPrice>
                                                     <FontAwesomeIcon onClick={(event)=>handleDeleteBook(event,book.bookId)} icon={faTrashCan}/>
