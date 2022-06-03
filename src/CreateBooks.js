@@ -184,10 +184,13 @@ export const CreateBooks = () => {
     useEffect(()=>{
         localStorage.setItem('books',JSON.stringify(books));
     },[books])
-    const handleChange=(bookId)=>{
+    const handleClick=(event,bookId,author,title)=>{
         const filteredBooks=books.filter((element)=>{
             let editBtn = document.getElementById('editBtn');
-            let editables = document.querySelectorAll('#title, #author, #bookId');
+            let editables = [];
+           editables[0] = document.getElementById('title');
+            editables[1] = document.getElementById('author');
+            editables[2] = document.getElementById('bookId');
                 if (!editables[0].isContentEditable) {
                     editables[0].contentEditable = 'true';
                     editables[1].contentEditable = 'true';
@@ -212,6 +215,9 @@ export const CreateBooks = () => {
                     element.title = newBookTitle.replace(/['"]+/g, '');
                     const newBookAuthor = JSON.stringify(localStorage.getItem('author'))
                     element.author = newBookAuthor.replace(/['"]+/g, '');
+                    for (let i = 0; i < editables.length; i++) {
+                        localStorage.removeItem(editables[i].getAttribute('id'));
+                    }
                 }
         return element;
     });
@@ -272,7 +278,7 @@ export const CreateBooks = () => {
                                                 </BookId>
                                                 <ProductPrice>
                                                     <FontAwesomeIcon onClick={(event)=>handleDeleteBook(event,book.bookId)} icon={faTrashCan}/>
-                                                    <StyledButton  id="editBtn" onClick={()=>handleChange(book.bookId)}>Изменить</StyledButton>
+                                                    <StyledButton onClick={(event)=>handleClick(event,book.bookId,book.author,book.title)} id="editBtn">Изменить</StyledButton>
                                                 </ProductPrice>
                                             </Details>
                                         </BookDetail>
