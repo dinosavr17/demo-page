@@ -2,6 +2,7 @@ import React,{useState, useEffect} from 'react'
 import styled, { createGlobalStyle, css } from "styled-components";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faTrashCan} from "@fortawesome/free-regular-svg-icons";
+import {faPenAlt} from "@fortawesome/free-solid-svg-icons";
 
 const GlobalStyle = createGlobalStyle`
   html {
@@ -183,6 +184,42 @@ export const CreateBooks = () => {
     useEffect(()=>{
         localStorage.setItem('books',JSON.stringify(books));
     },[books])
+    const handleChangeId=(bookId)=>{
+        const filteredBooks=books.filter((element)=>{
+        let editBtn = document.getElementById('editBtn');
+        let editables = document.querySelectorAll('#title, #author, #bookId');
+        if (!editables[0].isContentEditable) {
+            editables[0].contentEditable = 'true';
+            editables[1].contentEditable = 'true';
+            editables[2].contentEditable = 'true';
+            editBtn.innerHTML = 'Save Changes';
+            editBtn.style.backgroundColor = '#6F9';
+        }
+        else {
+            // выключаем режим редактирования
+            editables[0].contentEditable = 'false';
+            editables[1].contentEditable = 'false';
+            editables[2].contentEditable = 'false';
+            // изменяем текст и цвет кнопки
+            editBtn.innerHTML = 'Enable Editing';
+            editBtn.style.backgroundColor = '#ffcc00';
+            // сохраняем данные в localStorage
+            for (let i = 0; i < editables.length; i++) {
+                localStorage.setItem(editables[i].getAttribute('id'), editables[i].innerHTML);
+            }
+            const newBookId = JSON.stringify(localStorage.getItem('bookId'))
+            element.bookId = newBookId.replace(/['"]+/g, '');
+            const newBookTitle = JSON.stringify(localStorage.getItem('title'))
+            element.title = newBookTitle.replace(/['"]+/g, '');
+            const newBookAuthor = JSON.stringify(localStorage.getItem('author'))
+            element.author = newBookAuthor.replace(/['"]+/g, '');
+        }
+        return element;
+    })
+    // var oldItems = JSON.parse(localStorage.getItem('books'))
+    // console.log(books.map((book) => (book.bookId)));
+        setbooks(filteredBooks);
+    }
     return (
         <Container>
         <>
@@ -225,16 +262,18 @@ export const CreateBooks = () => {
                                             <Image src={book.cover} />
                                             <Details>
                                                 <BookTitle>
-                                                    <b>Название:</b> {book.title}
+                                                    <b>Название:</b>
+                                                    <span id='title'>{book.title}</span>
                                                 </BookTitle>
                                                 <BookAuthor>
-                                                    <b>Автор:</b> {book.author}
+                                                    <b>Автор:</b><span id='author'>{book.author}</span>
                                                 </BookAuthor>
                                                 <BookId>
-                                                    <b>ID:</b> {book.bookId}
+                                                    <b>ID:</b> <span id='bookId'>{book.bookId}</span>
                                                 </BookId>
                                                 <ProductPrice>
                                                     <FontAwesomeIcon onClick={(event)=>handleDeleteBook(event,book.bookId)} icon={faTrashCan}/>
+                                                    <StyledButton  id="editBtn" onClick={()=>handleChangeId(book.bookId)}>Изменить</StyledButton>
                                                 </ProductPrice>
                                             </Details>
                                         </BookDetail>
