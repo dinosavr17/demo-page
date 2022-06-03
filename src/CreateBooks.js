@@ -2,7 +2,6 @@ import React,{useState, useEffect} from 'react'
 import styled, { createGlobalStyle, css } from "styled-components";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faTrashCan} from "@fortawesome/free-regular-svg-icons";
-
 const GlobalStyle = createGlobalStyle`
   html {
     height: 100%
@@ -140,6 +139,7 @@ export const CreateBooks = () => {
     const [author, setAuthor]=useState('');
     const [bookId, setBookId]=useState('');
     const [cover, setCover]=useState('');
+    const [buttonId, setButtonId] = useState('');
     useEffect( ()=>{
         let input = document.querySelector('input[type=file]');
 
@@ -158,19 +158,20 @@ export const CreateBooks = () => {
 
             input.addEventListener('change', changeFile);
     },[])
-
     const handleAddBookSubmit=(event)=>{
         event.preventDefault();
         let book={
             title,
             author,
             bookId,
-            cover
+            cover,
+            buttonId
         }
         setbooks([...books,book]);
         setTitle('');
         setAuthor('');
         setBookId('');
+        setButtonId('');
     }
 
 
@@ -185,8 +186,9 @@ export const CreateBooks = () => {
     },[books])
     const handleClick=(event,bookId,author,title)=>{
         const filteredBooks=books.filter((element)=>{
-            let editBtn = document.getElementById('editBtn');
+            let editBtn = '';
             let editables = [];
+           editBtn = document.getElementById(element.buttonId);
            editables[0] = document.getElementById(element.title);
             editables[1] = document.getElementById(element.author);
             editables[2] = document.getElementById(element.bookId);
@@ -201,8 +203,8 @@ export const CreateBooks = () => {
                     editables[0].contentEditable = 'false';
                     editables[1].contentEditable = 'false';
                     editables[2].contentEditable = 'false';
-                    editBtn.innerHTML = 'Enable Editing';
-                    editBtn.style.backgroundColor = '#ffcc00';
+                    editBtn.innerHTML = 'Изменить';
+                    editBtn.style.backgroundColor = '#f7797d';
                     for (let i = 0; i < editables.length; i++) {
                         localStorage.setItem(editables[i].getAttribute('id'), editables[i].innerHTML);
                     }
@@ -242,7 +244,10 @@ export const CreateBooks = () => {
                                      placeholder='Имя автора'>
                         </StyledInput>
                         <StyledInput type="text" required
-                               onChange={(event)=>setBookId(event.target.value)}
+                               onChange={(event)=>{
+                                   setBookId(event.target.value);
+                                   setButtonId(event.target.value+'id');
+                               }}
                                      value={bookId}
                                      placeholder='ID книги'>
                         </StyledInput>
@@ -276,7 +281,7 @@ export const CreateBooks = () => {
                                                 </BookId>
                                                 <ProductPrice>
                                                     <FontAwesomeIcon onClick={(event)=>handleDeleteBook(event,book.bookId)} icon={faTrashCan}/>
-                                                    <StyledButton onClick={(event)=>handleClick(event,book.bookId,book.author,book.title)} id="editBtn">Изменить</StyledButton>
+                                                    <StyledButton onClick={(event)=>handleClick(event,book.bookId,book.author,book.title)} id={book.buttonId}>Изменить</StyledButton>
                                                 </ProductPrice>
                                             </Details>
                                         </BookDetail>
